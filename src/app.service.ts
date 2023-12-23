@@ -29,9 +29,7 @@ export class AppService {
       if (e instanceof BadRequestException) {
         throw new BadRequestException('Bad request: ' + e.message);
       } else {
-        throw new InternalServerErrorException(
-          'Internal server error: ' + e.message,
-        );
+        throw new InternalServerErrorException(e.message);
       }
     }
   }
@@ -58,4 +56,3 @@ export class AppService {
     }
   }
 }
-

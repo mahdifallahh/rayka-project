@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
@@ -30,17 +31,9 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  async createDevice(): Promise<string> {
-    const params: CreateDeviceDto = {
-      id: '/devices/id1',
-      deviceModel: '/devicemodels/id1',
-      name: 'Sensor',
-      note: 'Testing a sensor.',
-      serial: 'A020000102',
-    };
-
+  async createDevice(@Body() body: CreateDeviceDto): Promise<string> {
     try {
-      await this.appService.createDevice(params as any);
+      await this.appService.createDevice(body);
       return 'Item successfully created';
     } catch (error) {
       console.error('error======>>>>>', error);
