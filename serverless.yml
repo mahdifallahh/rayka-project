@@ -1,0 +1,59 @@
+service: serverless-example
+
+plugins:
+  - serverless-dynamodb
+  - serverless-offline
+
+custom:
+  serverless-dynamodb:
+    port: 8000
+    docker: false
+    inMemory: true
+    migrate: true
+    shareDb: true
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'dynamodb:CreateTable'
+            - 'dynamodb:DescribeTable'
+            - 'dynamodb:Query'
+            - 'dynamodb:Scan'
+            - 'dynamodb:GetItem'
+            - 'dynamodb:PutItem'
+            - 'dynamodb:UpdateItem'
+            - 'dynamodb:DeleteItem'
+          Resource: 'arn:aws:dynamodb:*:*:table/devicesTable'
+  environment:
+    DEVICE_TABLE: devicesTable
+
+functions:
+  main:
+    handler: dist/main.handler
+    timeout: 300
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
+resources:
+  Resources:
+    devicesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: devicesTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
